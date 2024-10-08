@@ -6,7 +6,7 @@ código del inmueble, valor pagado y fecha de pago, para garantizar la consisten
 """
 from decimal import Decimal
 import re
-from datetime import date, datetime
+from datetime import date
 from typing import Optional
 from pydantic import BaseModel, Field, field_validator
 from app.core.constants import DOCUMENT_REGEX, EXAMPLE_DATA_PAGO
@@ -51,7 +51,8 @@ class PagoSchema(BaseModel):
         """
         if not re.fullmatch(DOCUMENT_REGEX, v):
             raise ValueError(
-                "El documento de identificación debe contener solo números y tener entre 1 y 20 caracteres."
+                "El documento de identificación debe contener solo " +
+                "números y tener entre 1 y 20 caracteres."
             )
         return v
 
@@ -87,7 +88,9 @@ class PagoSchema(BaseModel):
         """
         return cls(
             id=pago_model.id,
-            documento_identificacion_arrendatario=pago_model.documento_identificacion_arrendatario,
+            documento_identificacion_arrendatario=(
+                pago_model.documento_identificacion_arrendatario
+            ),
             codigo_inmueble=pago_model.codigo_inmueble,
             valor_pagado=pago_model.valor_pagado,
             fecha_pago=pago_model.fecha_pago
@@ -105,13 +108,15 @@ class PagoSchema(BaseModel):
             PagoSchema: El esquema con los datos del pago.
         """
         return cls(
-            documento_identificacion_arrendatario=input_schema.documento_identificacion_arrendatario,
+            documento_identificacion_arrendatario=(
+                input_schema.documento_identificacion_arrendatario
+            ),
             codigo_inmueble=input_schema.codigo_inmueble,
             valor_pagado=input_schema.valor_pagado,
             fecha_pago=input_schema.fecha_pago
         )
 
-    class Config:
+    class Config:  # pylint: disable=too-few-public-methods
         """
         Configuración para habilitar la conversión desde el modelo SQLAlchemy y añadir un ejemplo.
         """
